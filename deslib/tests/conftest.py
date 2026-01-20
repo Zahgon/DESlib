@@ -129,6 +129,7 @@ def create_base_classifier(return_value, return_prob=None):
     classifier = MagicMock()
     classifier.predict.return_value = return_value
     classifier.predict_proba.return_value = return_prob
+    classifier.__sklearn_tags__ = lambda: type('obj', (object,), {'requires_fit': False})
     return classifier
 
 
