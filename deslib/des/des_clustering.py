@@ -137,51 +137,10 @@ class DESClustering(BaseDS):
         -------
         self
         """
-        super(DESClustering, self).fit(X, y)
-        self.DSEL_data_ = self.DSEL_data_.astype(np.double)
-        self.N_ = int(self.n_classifiers_ * self.pct_accuracy)
-        self.J_ = int(np.ceil(self.n_classifiers_ * self.pct_diversity))
-
-        self._check_parameters()
-
-        self.metric_classifier_ = getattr(metrics, self.metric_performance)
-
-        if self.clustering is None:
-            if self.n_samples_ >= self.n_clusters:
-                self.clustering_ = KMeans(n_clusters=self.n_clusters,
-                                          random_state=self.random_state)
-            else:
-                warnings.warn("n_clusters is bigger than DSEL size. "
-                              "Using All DSEL examples as cluster centroids.",
-                              category=RuntimeWarning)
-                self.clustering_ = KMeans(n_clusters=self.n_samples_,
-                                          random_state=self.random_state)
-
-            self.clustering_.fit(self.DSEL_data_)
-        else:
-            self.clustering_ = self.clustering.fit(self.DSEL_data_)
-
-        # set the diversity metric used
-        self._set_diversity_func()
-
-        # Since the clusters are fixed, we can pre-compute the accuracy and
-        # diversity of each cluster as well as the # selected classifiers
-        # (indices) for each one. These pre-computed information will be kept
-        # on those three variables:
-        self.performance_cluster_ = np.zeros(
-            (self.clustering_.n_clusters, self.n_classifiers_))
-        self.diversity_cluster_ = np.zeros(
-            (self.clustering_.n_clusters, self.n_classifiers_))
-        self.indices_ = np.zeros((self.clustering_.n_clusters, self.J_),
-                                 dtype=int)
-
-        self._preprocess_clusters()
-        return self
+        pass
 
     def get_competence_region(self, query, k=None):
-        distances = self.clustering_.transform(query.astype(np.double))
-        region = self.clustering_.predict(query.astype(np.double))
-        return distances, region
+        pass
 
     def _preprocess_clusters(self):
         """Preprocess the competence as well as the average diversity of each
@@ -195,42 +154,7 @@ class DESClustering(BaseDS):
         classifier for each cluster. The attribute indices_ stores the
         pre-selected base classifiers for each cluster.
         """
-        labels = self.clustering_.predict(self.DSEL_data_)
-
-        for cluster_index in range(self.clustering_.n_clusters):
-
-            # Get the indices_ of the samples in the corresponding cluster.
-            sample_indices = np.where(labels == cluster_index)[0]
-
-            # Compute performance metric of each classifier in this cluster
-            score_classifier = self.get_scores_(sample_indices)
-
-            self.performance_cluster_[cluster_index, :] = score_classifier
-
-            # Get the N_ most accurate classifiers in the cluster
-            performance_indices = np.argsort(score_classifier)[::-1][0:self.N_]
-
-            # Get the target labels for the samples in the corresponding
-            #  cluster for the diversity calculation.
-
-            targets = self.DSEL_target_[sample_indices]
-            self.diversity_cluster_[cluster_index, :] = \
-                compute_pairwise_diversity(targets,
-                                           self.BKS_DSEL_[sample_indices, :],
-                                           self.diversity_func_)
-
-            diversity_of_selected = self.diversity_cluster_[
-                cluster_index, performance_indices]
-
-            if self.more_diverse:
-                diversity_indices = np.argsort(diversity_of_selected)[::-1][
-                    0:self.J_]
-            else:
-                diversity_indices = np.argsort(diversity_of_selected)[
-                    0:self.J_]
-
-            self.indices_[cluster_index, :] = performance_indices[
-                diversity_indices]
+        pass
 
     def estimate_competence(self, competence_region, distances=None,
                             predictions=None):
@@ -252,8 +176,7 @@ class DESClustering(BaseDS):
         competences : array = [n_samples, n_classifiers]
                       The competence level estimated for each base classifier.
         """
-        competences = self.performance_cluster_[competence_region][:]
-        return competences
+        pass
 
     def select(self, competences):
         """Select an ensemble with the most accurate and most diverse
@@ -274,8 +197,7 @@ class DESClustering(BaseDS):
             Indices of the selected base classifier for each test example.
 
         """
-        selected_classifiers = self.indices_[competences, :]
-        return selected_classifiers
+        pass
 
     def classify_with_ds(self, predictions, probabilities=None,
                          competence_region=None, distances=None,
@@ -305,11 +227,7 @@ class DESClustering(BaseDS):
         predicted_label : array of shape (n_samples)
                           Predicted class label for each test example.
         """
-        proba = self.predict_proba_with_ds(predictions, probabilities,
-                                           competence_region, distances,
-                                           DFP_mask)
-        predicted_label = proba.argmax(axis=1)
-        return predicted_label
+        pass
 
     def predict_proba_with_ds(self, predictions, probabilities,
                               competence_region=None, distances=None,
@@ -339,21 +257,7 @@ class DESClustering(BaseDS):
         predicted_proba : array of shape (n_samples, n_classes)
             Posterior probabilities estimates for each test example.
         """
-        selected_classifiers = self.select(competence_region)
-
-        if self.voting == 'hard':
-            votes = predictions[np.arange(predictions.shape[0])[:, None],
-                                selected_classifiers]
-            votes = sum_votes_per_class(votes, self.n_classes_)
-            predicted_proba = votes / votes.sum(axis=1)[:, None]
-
-        else:
-            ensemble_proba = probabilities[
-                np.arange(probabilities.shape[0])[:, None],
-                selected_classifiers, :]
-            predicted_proba = np.mean(ensemble_proba, axis=1)
-
-        return predicted_proba
+        pass
 
     def _check_parameters(self):
         """Check if the parameters passed as argument are correct.
@@ -363,50 +267,11 @@ class DESClustering(BaseDS):
         ValueError
             If the hyper-parameters are incorrect.
         """
-        if self.metric_diversity not in ['DF', 'Q', 'ratio']:
-            raise ValueError(
-                'Diversity metric must be one of the following values:'
-                ' "DF", "Q" or "Ratio"')
-
-        try:
-            getattr(metrics, self.metric_performance)
-        except AttributeError:
-            raise ValueError(
-                "Parameter metric_performance must be a sklearn metrics")
-
-        if self.N_ <= 0 or self.J_ <= 0:
-            raise ValueError("The values of N_ and J_ should be higher than 0"
-                             "N_ = {}, J_= {} ".format(self.N_, self.J_))
-        if self.N_ < self.J_:
-            raise ValueError(
-                "The value of N_ should be greater or equals than J_"
-                "N_ = {}, J_= {} ".format(self.N_, self.J_))
-
-        if self.clustering is not None:
-            if not isinstance(self.clustering, ClusterMixin):
-                raise ValueError(
-                    "Parameter clustering must be a sklearn"
-                    " cluster estimator.")
-
-        if self.voting not in ['soft', 'hard']:
-            raise ValueError('Invalid value for parameter "mode".'
-                             ' "mode" should be one of these options '
-                             '{selection, hybrid, weighting}')
-
-        if self.voting == 'soft':
-            self._check_predict_proba()
+        pass
 
     def get_scores_(self, sample_indices):
 
-        def precision_function(label_predicted):
-            targets = self.DSEL_target_[sample_indices]
-            return self.metric_classifier_(targets, label_predicted)
-
-        label_predicted = self.BKS_DSEL_[sample_indices, :]
-        score_classifier = np.apply_along_axis(
-            precision_function, 0, label_predicted)
-
-        return score_classifier
+        pass
 
     def _set_diversity_func(self):
         """Set the diversity function to be used according to the
@@ -416,9 +281,4 @@ class DESClustering(BaseDS):
         or Ratio of errors.
 
         """
-        if self.metric_diversity == 'DF':
-            self.diversity_func_ = negative_double_fault
-        elif self.metric_diversity == 'Q':
-            self.diversity_func_ = Q_statistic
-        else:
-            self.diversity_func_ = ratio_errors
+        pass

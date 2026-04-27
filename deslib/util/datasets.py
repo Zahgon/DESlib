@@ -66,43 +66,7 @@ def make_P2(size_classes, random_state=None):
     and Cybernetics, Part B 35 (2005) 1252–1271.
 
     """
-    rng = check_random_state(random_state)
-    n_samples = sum(size_classes) * 6
-    class_1 = np.zeros((size_classes[0], 2))
-    class_2 = np.zeros((size_classes[1], 2))
-    size_class1 = 0
-    size_class2 = 0
-    data = rng.rand(n_samples, 2)
-    for x in data:
-        if (size_class1 + size_class2) >= sum(size_classes):
-            break
-
-        # This if is very complex. Need to simplify that somehow
-        if x[1] > (-0.1 * (x[0] * 10) ** 2 + 0.6 * np.sin(
-                4 * x[0] * 10) + 8.) / 10. and x[1] > (
-                (x[0] * 10 - 2) ** 2 + 1) / 10 or \
-                x[1] < (2 * np.sin(x[0] * 10) + 5) / 10 and x[1] > (
-                (x[0] * 10 - 2) ** 2 + 1) / 10 or \
-                x[1] < (-0.1 * (x[0] * 10) ** 2 + 0.6 * np.sin(
-                    4 * x[0] * 10) + 8) / 10 and x[1] < (
-                (x[0] * 10 - 2) ** 2 + 1) / 10 and \
-                x[1] > (2 * np.sin(x[0] * 10) + 5) / 10 or \
-                x[1] > (-0.1 * (x[0] * 10) ** 2 + 0.6 * np.sin(
-                    4 * x[0] * 10) + 8) / 10 and x[1] < (
-                2 * np.sin(x[0] * 10) + 5) / 10 or \
-                x[1] > (((x[0] * 10 - 10) ** 2) / 2 + 7.902) / 10.:
-
-            if size_class1 < size_classes[0]:
-                class_1[size_class1] = x
-                size_class1 += 1
-        elif size_class2 < size_classes[1]:
-            class_2[size_class2] = x
-            size_class2 += 1
-
-    y = np.hstack((np.zeros(size_class1), np.ones(size_class2)))
-    X = np.vstack((class_1, class_2))
-
-    return X, y
+    pass
 
 
 def make_circle_square(size_classes, random_state=None):
@@ -133,32 +97,7 @@ def make_circle_square(size_classes, random_state=None):
     on Neural Networks (2005) 1075–1080.
 
     """
-    rng = check_random_state(random_state)
-    n_samples = sum(size_classes)
-    class_1 = np.zeros((size_classes[0], 2))
-    class_2 = np.zeros((size_classes[1], 2))
-    size_class1 = 0
-    size_class2 = 0
-    data = rng.rand(n_samples * 10, 2)
-    r = 0.398942
-    for x in data:
-        test_class = ((x[0] - 0.5) ** 2) + ((x[1] - 0.5) ** 2)
-        if test_class < (r ** 2):
-            if size_class1 < size_classes[0]:
-                class_1[size_class1] = x
-                size_class1 += 1
-
-        elif size_class2 < size_classes[1]:
-            class_2[size_class2] = x
-            size_class2 += 1
-
-        if size_class2 + size_class1 >= n_samples:
-            break
-
-    y = np.hstack((np.zeros(size_class1), np.ones(size_class2)))
-    X = np.vstack((class_1, class_2))
-
-    return X, y
+    pass
 
 
 def make_banana(size_classes, na=0.1, random_state=None):
@@ -191,22 +130,7 @@ def make_banana(size_classes, na=0.1, random_state=None):
     John Wiley & Sons, 2004.
 
     """
-    rng = check_random_state(random_state)
-    if not isinstance(na, float) or na > 1.:
-        raise ValueError(
-            'Parameter na must be a float lower than 1. na = {}'.format(na))
-
-    t1 = np.transpose(-np.linspace(-np.pi / 4, np.pi, size_classes[0]))
-    z1 = np.transpose((np.sin(t1), np.cos(t1)))
-    class_1 = 1.5 * z1 + rng.randn(size_classes[0], 2) * na
-
-    t2 = np.transpose(-np.linspace(-np.pi / 4, np.pi, size_classes[1]))
-    z2 = np.transpose((np.sin(t2), np.cos(t2)))
-    class_2 = z2 - rng.randn(size_classes[1], 2) * na
-    y = np.hstack((np.zeros(size_classes[0]), np.ones(size_classes[1])))
-    X = np.vstack((class_1, class_2))
-
-    return X, y
+    pass
 
 
 def make_banana2(size_classes, sigma=1, random_state=None):
@@ -240,27 +164,7 @@ def make_banana2(size_classes, sigma=1, random_state=None):
     pattern recognition, 2004. URL 〈http://www.prtools.org〉.
 
     """
-    rng = check_random_state(random_state)
-    banana_size = 5
-    region_class_1 = 0.125 * np.pi + rng.rand(
-        size_classes[0]) * 1.25 * np.pi
-    data_class_1 = banana_size * np.transpose(
-        [np.sin(region_class_1), np.cos(region_class_1)]) + \
-        rng.randn(size_classes[0], 2) * sigma
-
-    region_class_2 = 0.375 * np.pi - rng.rand(
-        size_classes[1]) * 1.25 * np.pi
-
-    tmp = np.transpose(
-        [np.sin(region_class_2), np.cos(region_class_2)]) * banana_size
-
-    data_class_2 = (tmp + rng.randn(size_classes[1], 2) * sigma) + (
-        np.ones((size_classes[1], 2)) * (-0.75 * banana_size))
-
-    X = np.vstack((data_class_1, data_class_2))
-    y = np.hstack((np.zeros(size_classes[0]), np.ones(size_classes[1])))
-
-    return X, y
+    pass
 
 
 def make_xor(n_samples, random_state=None):
@@ -286,8 +190,4 @@ def make_xor(n_samples, random_state=None):
         Class labels associated with each class.
 
     """
-    rng = check_random_state(random_state)
-    X = rng.uniform(low=0, high=1, size=(n_samples, 2))
-    y = np.logical_xor(X[:, 0] > 0.5, X[:, 1] > 0.5)
-
-    return X, y
+    pass

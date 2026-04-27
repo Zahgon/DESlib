@@ -73,64 +73,21 @@ class BaseStaticEnsemble(BaseEstimator, ClassifierMixin):
         self : object
             Returns self.
         """
-        self.random_state_ = check_random_state(self.random_state)
-
-        # Check if the pool of classifiers is None. If yes, use a
-        # BaggingClassifier for the pool.
-        if self.pool_classifiers is None:
-            self.pool_classifiers_ = BaggingClassifier(
-                random_state=self.random_state_, n_jobs=self.n_jobs)
-            self.pool_classifiers_.fit(X, y)
-
-        else:
-            self.pool_classifiers_ = self.pool_classifiers
-
-        self.n_classifiers_ = len(self.pool_classifiers_)
-        # allow base models with feature subspaces.
-        if hasattr(self.pool_classifiers_, "estimators_features_"):
-            self.estimator_features_ = \
-                np.array(self.pool_classifiers_.estimators_features_)
-        else:
-            indices = np.arange(X.shape[1])
-            self.estimator_features_ = np.tile(indices,
-                                               (self.n_classifiers_, 1))
-
-        self._validate_pool()
-        # dealing with label encoder
-        self._check_label_encoder()
-        self.y_enc_ = self._setup_label_encoder(y)
-        self.n_classes_ = self.classes_.size
-        self.n_features_ = X.shape[1]
-
-        return self
+        pass
 
     def _check_label_encoder(self):
         # Check if base classifiers are not using LabelEncoder (the case for
         # scikit-learn's ensembles):
-        if isinstance(self.pool_classifiers_, BaseEnsemble):
-            if np.array_equal(self.pool_classifiers_.classes_,
-                              self.pool_classifiers_[0].classes_):
-                self.base_already_encoded_ = False
-            else:
-                self.base_already_encoded_ = True
-        else:
-            self.base_already_encoded_ = False
+        pass
 
     def _setup_label_encoder(self, y):
         """
         Setup the label encoder
         """
-        self.enc_ = LabelEncoder()
-        y_ind = self.enc_.fit_transform(y)
-        self.classes_ = self.enc_.classes_
-
-        return y_ind
+        pass
 
     def _encode_base_labels(self, y):
-        if self.base_already_encoded_:
-            return y
-        else:
-            return self.enc_.transform(y)
+        pass
 
     def _validate_pool(self):
         """ Check the estimator and the n_estimator attribute, set the
@@ -141,6 +98,4 @@ class BaseStaticEnsemble(BaseEstimator, ClassifierMixin):
         ValueError
             If the pool of classifiers is empty or just a single model.
         """
-        if self.n_classifiers_ <= 1:
-            raise ValueError("n_classifiers must be greater than one, "
-                             "got {}.".format(len(self.pool_classifiers)))
+        pass

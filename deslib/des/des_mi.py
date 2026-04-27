@@ -160,25 +160,7 @@ class DESMI(BaseDS):
             for all query samples.
 
         """
-        # calculate the weight
-        class_frequency = np.bincount(self.DSEL_target_)
-        targets = self.DSEL_target_[competence_region]
-        num = class_frequency[targets]
-        weight = 1. / (1 + np.exp(self.alpha * num))
-        weight = normalize(weight, norm='l1')
-        correct_num = self.DSEL_processed_[competence_region, :]
-        correct = np.zeros((competence_region.shape[0], self.k_,
-                            self.n_classifiers_))
-        for i in range(self.n_classifiers_):
-            correct[:, :, i] = correct_num[:, :, i] * weight
-
-        # Apply the weights to each sample for each base classifier
-        competence = correct_num * weight[:, :, np.newaxis]
-        # calculate the classifiers mean competence for all
-        # samples/base classifier
-        competence = np.sum(competence, axis=1)
-
-        return competence
+        pass
 
     def select(self, competences):
         """Select an ensemble containing the N most accurate classifiers for
@@ -196,16 +178,7 @@ class DESMI(BaseDS):
             Matrix containing the indices of the N selected base classifier
             for each test example.
         """
-        # Check if the accuracy and diversity arrays have
-        # the correct dimensionality.
-        if competences.ndim < 2:
-            competences = competences.reshape(1, -1)
-
-        # sort the array to remove the most accurate classifiers
-        selected_classifiers = np.argsort(competences, axis=1)
-        selected_classifiers = selected_classifiers[:, ::-1][:, 0:self.N_]
-
-        return selected_classifiers
+        pass
 
     def classify_with_ds(self, predictions, probabilities=None,
                          neighbors=None, distances=None, DFP_mask=None):
@@ -239,10 +212,7 @@ class DESMI(BaseDS):
         predicted_label : array of shape (n_samples)
                           Predicted class label for each test example.
         """
-        proba = self.predict_proba_with_ds(predictions, probabilities,
-                                           neighbors, distances, DFP_mask)
-        predicted_label = proba.argmax(axis=1)
-        return predicted_label
+        pass
 
     def predict_proba_with_ds(self, predictions, probabilities,
                               competence_region=None, distances=None,
@@ -274,28 +244,7 @@ class DESMI(BaseDS):
         predicted_proba : array = [n_samples, n_classes]
                           Probability estimates for all test examples.
         """
-        accuracy = self.estimate_competence(
-            competence_region=competence_region,
-            distances=distances)
-
-        if self.DFP:
-            accuracy = accuracy * DFP_mask
-
-        selected_classifiers = self.select(accuracy)
-        if self.voting == 'hard':
-            votes = predictions[np.arange(predictions.shape[0])[:, None],
-                                selected_classifiers]
-            votes = sum_votes_per_class(votes, self.n_classes_)
-            predicted_proba = votes / votes.sum(axis=1)[:, None]
-
-        else:
-            ensemble_proba = probabilities[
-                             np.arange(probabilities.shape[0])[:, None],
-                             selected_classifiers, :]
-
-            predicted_proba = np.mean(ensemble_proba, axis=1)
-
-        return predicted_proba
+        pass
 
     def _validate_parameters(self):
         """Check if the parameters passed as argument are correct.
@@ -305,32 +254,4 @@ class DESMI(BaseDS):
         ValueError
             If the hyper-parameters are incorrect.
         """
-        super(DESMI, self)._validate_parameters()
-
-        self.N_ = int(self.n_classifiers_ * self.pct_accuracy)
-
-        if self.N_ <= 0:
-            raise ValueError("The value of N_ should be higher than 0"
-                             "N_ = {}".format(self.N_))
-
-        # The value of Scaling coefficient (alpha) should be positive
-        # to add more weight to the minority class
-        if self.alpha <= 0:
-            raise ValueError("The value of alpha should be higher than 0"
-                             "alpha = {}".format(self.alpha))
-
-        if not isinstance(self.alpha, float):
-            raise TypeError("parameter alpha should be a float!")
-
-        if self.pct_accuracy <= 0. or self.pct_accuracy > 1:
-            raise ValueError(
-                "The value of pct_accuracy should be higher than 0 and lower"
-                " or equal to 1, "
-                "pct_accuracy = {}".format(self.pct_accuracy))
-
-        if self.voting not in ['soft', 'hard']:
-            raise ValueError('Invalid value for parameter "voting".'
-                             ' "voting" should be one of these options '
-                             '{selection, hybrid, weighting}')
-        if self.voting == 'soft':
-            self._check_predict_proba()
+        pass

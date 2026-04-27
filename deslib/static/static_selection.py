@@ -86,40 +86,7 @@ class StaticSelection(BaseStaticEnsemble):
         self : object
             Returns self.
         """
-        X, y = validate_data(
-            self,
-            X,
-            y,
-            accept_sparse="csr",
-            dtype=np.float64,
-            order="C",
-            accept_large_sparse=False,
-        )
-        self._validate_parameters()
-
-        super(StaticSelection, self).fit(X, y)
-
-        self.n_classifiers_ensemble_ = int(
-            self.n_classifiers_ * self.pct_classifiers)
-
-        performances = np.zeros(self.n_classifiers_)
-
-        if not self.base_already_encoded_:
-            y_encoded = y
-        else:
-            y_encoded = self.enc_.transform(y)
-
-        for clf_idx, clf in enumerate(self.pool_classifiers_):
-            scorer = check_scoring(clf, self.scoring)
-            performances[clf_idx] = scorer(clf, X[:, self.estimator_features_[
-                                                         clf_idx]], y_encoded)
-
-        self.clf_indices_ = np.argsort(performances)[::-1][
-                            0:self.n_classifiers_ensemble_]
-        self.ensemble_ = [self.pool_classifiers_[clf_idx] for clf_idx in
-                          self.clf_indices_]
-
-        return self
+        pass
 
     def predict(self, X):
         """Predict the label of each sample in X and returns the predicted
@@ -135,22 +102,7 @@ class StaticSelection(BaseStaticEnsemble):
         predicted_labels : array of shape (n_samples)
                            Predicted class for each sample in X.
         """
-        self._check_is_fitted()
-        X = check_array(X)
-        if self.n_features_ != X.shape[1]:
-            raise ValueError("Number of features of the model must "
-                             "match the input. Model n_features is {0} and "
-                             "input n_features is {1}."
-                             "".format(self.n_features_, X.shape[1]))
-
-        votes = np.zeros((X.shape[0], self.n_classifiers_ensemble_))
-        for idx, clf in enumerate(self.ensemble_):
-            X_space = X[:, self.estimator_features_[self.clf_indices_[idx]]]
-            votes[:, idx] = self._encode_base_labels(clf.predict(X_space))
-
-        predicted_labels = majority_voting_rule(votes).astype(int)
-
-        return self.classes_.take(predicted_labels)
+        pass
 
     def predict_proba(self, X):
         """Estimates the posterior probabilities for sample in X.
@@ -165,33 +117,17 @@ class StaticSelection(BaseStaticEnsemble):
          predicted_proba : array of shape (n_samples, n_classes)
                            Probabilities estimates for each sample in X.
          """
-        self._check_is_fitted()
-        X = check_array(X)
-        if self.n_features_ != X.shape[1]:
-            raise ValueError("Number of features of the model must "
-                             "match the input. Model n_features is {0} and "
-                             "input n_features is {1}."
-                             "".format(self.n_features_, X.shape[1]))
-
-        self._check_predict_proba()
-        features = self.estimator_features_[self.clf_indices_]
-        proba = predict_proba_ensemble(self.ensemble_, X, features)
-        return proba
+        pass
 
     def _validate_parameters(self):
 
-        if not isinstance(self.pct_classifiers, float):
-            raise TypeError('pct_classifiers should be a float.')
-        if self.pct_classifiers > 1 or self.pct_classifiers < 0:
-            raise ValueError(
-                'The parameter pct_classifiers should be a number '
-                'between 0 and 1.')
+        pass
 
     def _check_is_fitted(self):
         """Verify if the estimator algorithm was fitted. Raises an error if it
         is not fitted.
         """
-        check_is_fitted(self, "ensemble_")
+        pass
 
     def _check_predict_proba(self):
         """ Checks if each base classifier in the ensemble (selected models)
@@ -202,7 +138,4 @@ class StaticSelection(BaseStaticEnsemble):
         ValueError
             If the base classifiers do not implements the predict_proba method.
         """
-        for clf in self.ensemble_:
-            if "predict_proba" not in dir(clf):
-                raise ValueError(
-                    "All base classifiers should output probability estimates")
+        pass

@@ -141,9 +141,4 @@ class MinimumDifference(BaseProbabilistic):
         C_src : array of shape (n_samples, n_classifiers)
             The competence source for each base classifier at each data point.
         """
-        C_src = np.zeros((self.n_samples_, self.n_classifiers_))
-        for clf_index in range(self.n_classifiers_):
-            supports = self.dsel_scores_[:, clf_index, :]
-            C_src[:, clf_index] = min_difference(supports, self.DSEL_target_)
-
-        return C_src
+        pass

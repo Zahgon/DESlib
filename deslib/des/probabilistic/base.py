@@ -68,31 +68,14 @@ class BaseProbabilistic(BaseDES):
         self : object
             Returns self.
         """
-        super(BaseProbabilistic, self).fit(X, y)
-
-        if self.n_classes_ == 1:
-            raise ValueError(
-                "Error. This class does not accept one class datasets!")
-
-        self._check_predict_proba()
-
-        self.dsel_scores_ = self._predict_proba_base(self.DSEL_data_)
-
-        # Pre process the source of competence for the entire DSEL,
-        # making the method faster during generalization.
-        self.C_src_ = self.source_competence()
-        return self
+        pass
 
     def _validate_parameters(self):
         """
         Check if the input parameters for potential function based methods are
         correct.
         """
-        if self.knn_classifier == 'knne':
-            raise ValueError(
-                "Error, this class does not support the KNN-Equality method"
-            )
-        super(BaseProbabilistic, self)._validate_parameters()
+        pass
 
     def estimate_competence(self, competence_region, distances,
                             predictions=None):
@@ -122,16 +105,7 @@ class BaseProbabilistic(BaseDES):
             Competence level estimated for each base classifier and test
             example.
         """
-        potential_dists = self.potential_func(distances)
-        potential_dists[potential_dists == 0] = 1e-20
-        sum_potential = np.sum(potential_dists, axis=1)
-
-        competences = np.einsum('ijk,ij->ik',
-                                self.C_src_[competence_region, :],
-                                potential_dists)
-        competences = competences / sum_potential.reshape(-1, 1)
-
-        return competences
+        pass
 
     def select(self, competences):
         """Selects the base classifiers that obtained a competence level higher
@@ -151,21 +125,7 @@ class BaseProbabilistic(BaseDES):
             False otherwise.
 
         """
-        if competences.ndim < 2:
-            competences = competences.reshape(1, -1)
-
-        # Set the threshold as the performance of the random classifier
-        if self.selection_threshold is None:
-            selection_threshold = 1.0 / self.n_classes_
-        else:
-            selection_threshold = self.selection_threshold
-
-        selected_classifiers = (competences > selection_threshold)
-        # For the rows that are all False (i.e., no base classifier was
-        # selected, select all classifiers (all True)
-        selected_classifiers[~np.any(selected_classifiers, axis=1), :] = True
-
-        return selected_classifiers
+        pass
 
     @staticmethod
     def potential_func(dist):
@@ -189,7 +149,7 @@ class BaseProbabilistic(BaseDES):
         -------
         The result of the potential function for each value in (dist)
         """
-        return np.exp(- (dist ** 2))
+        pass
 
     @abstractmethod
     def source_competence(self):

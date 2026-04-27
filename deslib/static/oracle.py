@@ -68,17 +68,7 @@ class Oracle(BaseStaticEnsemble):
         self : object
             Returns self.
         """
-        X, y = validate_data(
-            self,
-            X,
-            y,
-            accept_sparse="csr",
-            dtype=np.float64,
-            order="C",
-            accept_large_sparse=False,
-        )
-        super(Oracle, self).fit(X, y)
-        return self
+        pass
 
     def predict(self, X, y):
         """Prepare the labels using the Oracle model.
@@ -96,22 +86,7 @@ class Oracle(BaseStaticEnsemble):
         predicted_labels : array of shape (n_samples)
                            Predicted class for each sample in X.
         """
-        X = check_array(X)
-        if self.n_features_ != X.shape[1]:
-            raise ValueError("Number of features of the model must "
-                             "match the input. Model n_features is {0} and "
-                             "input n_features is {1}."
-                             "".format(self.n_features_, X.shape[1]))
-
-        y = self.enc_.transform(y)
-        preds = [clf.predict(X[:, self.estimator_features_[idx]])
-                 for idx, clf in enumerate(self.pool_classifiers_)]
-        preds = np.asarray(preds).T
-        hit_miss = np.asarray(preds) == y.reshape(-1, 1)
-        idx_sel_classifier = hit_miss.argmax(axis=1)
-        predicted_labels = preds[np.arange(preds.shape[0]), idx_sel_classifier]
-
-        return self.classes_.take(predicted_labels.astype(int))
+        pass
 
     def predict_proba(self, X, y):
         """Estimates the posterior probabilities for each class for each sample
@@ -135,14 +110,7 @@ class Oracle(BaseStaticEnsemble):
             Posterior probabilities estimates for each class.
 
         """
-        X = check_array(X)
-        y = self.enc_.transform(y)
-
-        probas = [clf.predict_proba(X[:, self.estimator_features_[idx]])
-                  for idx, clf in enumerate(self.pool_classifiers_)]
-        probas = np.array(probas).transpose((1, 0, 2))
-        best_probas_ids = np.argmax(probas[np.arange(y.size), :, y], axis=1)
-        return probas[np.arange(y.size), best_probas_ids, :]
+        pass
 
     def score(self, X, y, sample_weights=None):
         """ Return the mean accuracy on the given test data and labels.
@@ -163,7 +131,4 @@ class Oracle(BaseStaticEnsemble):
         accuracy : float
                    Classification accuracy of the Oracle model.
         """
-        from sklearn.metrics import accuracy_score
-        accuracy = accuracy_score(y, self.predict(X, y),
-                                  sample_weight=sample_weights)
-        return accuracy
+        pass

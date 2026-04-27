@@ -41,10 +41,7 @@ def majority_voting(classifier_ensemble, X):
     predicted_label : array of shape (n_samples)
         The label of each query sample predicted using the majority voting rule
     """
-    votes = _get_ensemble_votes(classifier_ensemble, X)
-    predicted_label = majority_voting_rule(votes)
-
-    return predicted_label
+    pass
 
 
 def weighted_majority_voting(classifier_ensemble, weights, X):
@@ -69,9 +66,7 @@ def weighted_majority_voting(classifier_ensemble, weights, X):
     predicted_label : array of shape (n_samples)
         The label of each query sample predicted using the majority voting rule
     """
-    votes = _get_ensemble_votes(classifier_ensemble, X)
-    predicted_label = weighted_majority_voting_rule(votes, weights)
-    return predicted_label
+    pass
 
 
 def _get_ensemble_votes(classifier_ensemble, X):
@@ -91,18 +86,7 @@ def _get_ensemble_votes(classifier_ensemble, X):
     votes : array of shape (n_samples, n_classifiers)
             The votes obtained by each base classifier
     """
-    # Check if a single sample was passed down to the function. In this case
-    # the sample must be converted to a 2D array.
-    X = check_array(X, ensure_2d=False)
-    if X.ndim == 1:
-        X = np.atleast_2d(X)
-
-    n_samples = X.shape[0]
-    votes = np.zeros((n_samples, len(classifier_ensemble)))
-    for clf_index, clf in enumerate(classifier_ensemble):
-        votes[:, clf_index] = clf.predict(X)
-
-    return votes
+    pass
 
 
 def majority_voting_rule(votes):
@@ -118,9 +102,7 @@ def majority_voting_rule(votes):
     predicted_label : array of shape (n_samples)
         The label of each query sample predicted using the majority voting rule
     """
-    # Omitting nan value in the predictions as they comes from removed
-    # classifiers
-    return mode(votes, axis=1)[0][:, 0]
+    pass
 
 
 def weighted_majority_voting_rule(votes, weights, labels_set=None):
@@ -143,29 +125,11 @@ def weighted_majority_voting_rule(votes, weights, labels_set=None):
     predicted_label : array of shape (n_samples)
         The label of each query sample predicted using the majority voting rule
     """
-    w_votes, labels_set = get_weighted_votes(votes, weights, labels_set)
-    predicted_label = labels_set[np.argmax(w_votes, axis=1)]
-    return predicted_label
+    pass
 
 
 def get_weighted_votes(votes, weights, labels_set=None):
-    if weights.shape != votes.shape:
-        raise ValueError(
-            'The shape of the arrays votes and weights should be the '
-            'same. weights = {} '
-            'while votes = {}'.format(weights.shape, votes.shape))
-    if labels_set is None:
-        labels_set = np.unique(votes.astype(int))
-
-    n_samples = votes.shape[0]
-    w_votes = np.zeros((len(labels_set), n_samples))
-    ma_weights = weights.view(np.ma.MaskedArray)
-
-    for ind, label in enumerate(labels_set):
-        ma_weights.mask = votes != label
-        w_votes[ind, :] = ma_weights.sum(axis=1)
-
-    return w_votes.T, labels_set
+    pass
 
 
 def sum_votes_per_class(predictions, n_classes):
@@ -185,10 +149,7 @@ def sum_votes_per_class(predictions, n_classes):
     summed_votes : array of shape (n_samples, n_classes)
         Summation of votes for each class
     """
-    votes = np.zeros((predictions.shape[0], n_classes), dtype=int)
-    for label in range(n_classes):
-        votes[:, label] = np.sum(predictions == label, axis=1)
-    return votes
+    pass
 
 
 def _get_ensemble_probabilities(classifier_ensemble, X,
@@ -212,16 +173,7 @@ def _get_ensemble_probabilities(classifier_ensemble, X,
         Probabilities predicted by each base classifier in the ensemble for all
         samples in X.
     """
-    list_proba = []
-    if estimator_features is None:
-        for idx, clf in enumerate(classifier_ensemble):
-            list_proba.append(clf.predict_proba(X))
-    else:
-        for idx, clf in enumerate(classifier_ensemble):
-            list_proba.append(clf.predict_proba(X[:, estimator_features[idx]]))
-    # transpose the array to have the
-    # shape = [n_samples, n_classifiers, n_classes]
-    return np.array(list_proba).transpose((1, 0, 2))
+    pass
 
 
 def predict_proba_ensemble(classifier_ensemble, X, estimator_features=None):
@@ -244,19 +196,11 @@ def predict_proba_ensemble(classifier_ensemble, X, estimator_features=None):
     predicted_proba : array of shape (n_samples, n_classes)
         Posterior probabilities estimates for each samples in X.
     """
-    ensemble_proba = _get_ensemble_probabilities(classifier_ensemble,
-                                                 X,
-                                                 estimator_features)
-    n_classifiers = ensemble_proba.shape[1]
-    predicted_proba = np.sum(ensemble_proba, axis=1) / n_classifiers
-    return predicted_proba
+    pass
 
 
 def aggregate_proba_ensemble_weighted(ensemble_proba, weights):
-    predicted_proba = ensemble_proba * np.expand_dims(weights, axis=2)
-    predicted_proba = predicted_proba.mean(axis=1)
-
-    return softmax(predicted_proba)
+    pass
 
 
 def average_combiner(classifier_ensemble, X):
@@ -275,8 +219,7 @@ def average_combiner(classifier_ensemble, X):
     predicted_label : array of shape (n_samples)
         The label of each query sample predicted using the majority voting rule
     """
-    ensemble_proba = _get_ensemble_probabilities(classifier_ensemble, X)
-    return average_rule(ensemble_proba)
+    pass
 
 
 def product_combiner(classifier_ensemble, X):
@@ -296,8 +239,7 @@ def product_combiner(classifier_ensemble, X):
         Probabilities predicted by each base classifier in the ensemble for all
         samples in X.
     """
-    ensemble_proba = _get_ensemble_probabilities(classifier_ensemble, X)
-    return product_rule(ensemble_proba)
+    pass
 
 
 def maximum_combiner(classifier_ensemble, X):
@@ -316,8 +258,7 @@ def maximum_combiner(classifier_ensemble, X):
     predicted_label : array of shape (n_samples)
         The label of each query sample predicted using the majority voting rule
     """
-    ensemble_proba = _get_ensemble_probabilities(classifier_ensemble, X)
-    return maximum_rule(ensemble_proba)
+    pass
 
 
 def minimum_combiner(classifier_ensemble, X):
@@ -336,8 +277,7 @@ def minimum_combiner(classifier_ensemble, X):
     predicted_label : array of shape (n_samples)
         The label of each query sample predicted using the majority voting rule
     """
-    ensemble_proba = _get_ensemble_probabilities(classifier_ensemble, X)
-    return minimum_rule(ensemble_proba)
+    pass
 
 
 def median_combiner(classifier_ensemble, X):
@@ -356,8 +296,7 @@ def median_combiner(classifier_ensemble, X):
     predicted_label : array of shape (n_samples)
         The label of each query sample predicted using the majority voting rule
     """
-    ensemble_proba = _get_ensemble_probabilities(classifier_ensemble, X)
-    return median_rule(ensemble_proba)
+    pass
 
 
 def average_rule(predictions):
@@ -374,9 +313,7 @@ def average_rule(predictions):
     predicted_label : array of shape (n_samples)
         The label of each query sample predicted using the majority voting rule
     """
-    _check_predictions(predictions)
-    average_predictions = np.mean(predictions, axis=1)
-    return np.argmax(average_predictions, axis=1)
+    pass
 
 
 def product_rule(predictions):
@@ -393,9 +330,7 @@ def product_rule(predictions):
     predicted_label : array of shape (n_samples)
         The label of each query sample predicted using the majority voting rule
     """
-    _check_predictions(predictions)
-    prod_predictions = np.prod(predictions, axis=1)
-    return np.argmax(prod_predictions, axis=1)
+    pass
 
 
 def median_rule(predictions):
@@ -412,9 +347,7 @@ def median_rule(predictions):
     predicted_label : array of shape (n_samples)
         The label of each query sample predicted using the majority voting rule
     """
-    _check_predictions(predictions)
-    median_predictions = np.median(predictions, axis=1)
-    return np.argmax(median_predictions, axis=1)
+    pass
 
 
 def maximum_rule(predictions):
@@ -431,9 +364,7 @@ def maximum_rule(predictions):
     predicted_label : array of shape (n_samples)
         The label of each query sample predicted using the majority voting rule
     """
-    _check_predictions(predictions)
-    max_predictions = np.max(predictions, axis=1)
-    return np.argmax(max_predictions, axis=1)
+    pass
 
 
 def minimum_rule(predictions):
@@ -451,9 +382,7 @@ def minimum_rule(predictions):
         Probabilities predicted by each base classifier in the ensemble for all
         samples in X.
     """
-    _check_predictions(predictions)
-    min_predictions = np.min(predictions, axis=1)
-    return np.argmax(min_predictions, axis=1)
+    pass
 
 
 def _check_predictions(predictions):
@@ -463,8 +392,4 @@ def _check_predictions(predictions):
     [n_samples, n_classifiers, n_classes]
 
     """
-    if predictions.ndim != 3:
-        raise ValueError(
-            'predictions must contain 3 dimensions: '
-            '[n_samples, n_classifiers, n_classes]. Currently'
-            'predictions has {} dimensions'.format(predictions.ndim))
+    pass

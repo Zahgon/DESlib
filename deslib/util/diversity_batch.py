@@ -75,37 +75,7 @@ def _process_predictions(y: np.array, y_pred1: np.array,
     N11 : Array of shape (n_samples,)
         Percentage of samples that both classifiers predict the correct label
     """
-
-    _, n_samples = y_pred2.shape
-
-    if n_samples == 0:
-        raise ValueError("Need at least one sample.")
-    if n_samples != len(y_pred1) or n_samples != len(y):
-        raise ValueError(
-            "Inconsistent number of samples between "
-            "class labels and predictions."
-        )
-
-    classifier_1_votes = y != y_pred1
-    classifier_2_votes = y != y_pred2
-
-    mismatch = classifier_1_votes != classifier_2_votes
-
-    classifier_1_mismatch_error = np.logical_and(classifier_1_votes, mismatch)
-    classifier_2_mismatch_error = np.logical_and(classifier_2_votes, mismatch)
-
-    N01 = np.sum(classifier_1_mismatch_error, axis=1) / n_samples
-    N10 = np.sum(classifier_2_mismatch_error, axis=1) / n_samples
-
-    matching = np.invert(mismatch)
-    n_matching = np.sum(matching, axis=1)
-
-    both_incorrect = np.logical_and(classifier_1_votes, matching).sum(axis=1)
-
-    N00 = both_incorrect / n_samples
-    N11 = (n_matching - both_incorrect) / n_samples
-
-    return N00, N10, N01, N11
+    pass
 
 
 def double_fault(y: np.array, y_pred1: np.array,
@@ -137,9 +107,7 @@ def double_fault(y: np.array, y_pred1: np.array,
     ensembles for image classification purposes."
     Image and Vision Computing 19.9 (2001): 699-707.
     """
-    N00, _, _, _ = _process_predictions(y, y_pred1, y_pred2)
-    df = N00
-    return df
+    pass
 
 
 def negative_double_fault(
@@ -170,7 +138,7 @@ def negative_double_fault(
     ensembles for image classification purposes."
     Image and Vision Computing 19.9 (2001): 699-707.
     """
-    return -double_fault(y, y_pred1, y_pred2)
+    pass
 
 
 def Q_statistic(y: np.array, y_pred1: np.array, y_pred2: np.array) -> np.array:
@@ -195,11 +163,7 @@ def Q_statistic(y: np.array, y_pred1: np.array, y_pred2: np.array) -> np.array:
     -------
     Q : The q-statistic measure between two classifiers
     """
-    N00, N10, N01, N11 = _process_predictions(y, y_pred1, y_pred2)
-    a = (N11 * N00) - (N01 * N10)
-    b = (N11 * N00) + (N01 * N10)
-    Q = np.divide(a, b, out=np.zeros_like(a), where=b != 0)
-    return Q
+    pass
 
 
 def ratio_errors(y: np.array, y_pred1: np.array,
@@ -230,12 +194,7 @@ def ratio_errors(y: np.array, y_pred1: np.array,
     committee performance."
     Multiple Classifier Systems (2003): 159-159.
     """
-    N00, N10, N01, N11 = _process_predictions(y, y_pred1, y_pred2)
-    N00[N00 == 0] = sys.float_info.max
-    a = N01 + N10
-    b = N00
-    ratio = np.divide(a, b, out=np.zeros_like(a), where=b != 0)
-    return ratio
+    pass
 
 
 def disagreement_measure(y: np.array, y_pred1: np.array,
@@ -260,9 +219,7 @@ def disagreement_measure(y: np.array, y_pred1: np.array,
     -------
     disagreement : The frequency at which both classifiers disagrees
     """
-    _, N10, N01, _ = _process_predictions(y, y_pred1, y_pred2)
-    disagreement = N10 + N01
-    return disagreement
+    pass
 
 
 def agreement_measure(y: np.array, y_pred1: np.array,
@@ -287,9 +244,7 @@ def agreement_measure(y: np.array, y_pred1: np.array,
     -------
     agreement : The frequency at which both classifiers agrees
     """
-    N00, _, _, N11 = _process_predictions(y, y_pred1, y_pred2)
-    agreement = N00 + N11
-    return agreement
+    pass
 
 
 def correlation_coefficient(
@@ -314,11 +269,7 @@ def correlation_coefficient(
     -------
     rho : The correlation coefficient measured between two classifiers
     """
-    N00, N10, N01, N11 = _process_predictions(y, y_pred1, y_pred2)
-    tmp = (N11 * N00) - (N10 * N01)
-    b = np.sqrt((N11 + N01) * (N10 + N00) * (N11 + N10) * (N01 + N00))
-    rho = np.divide(tmp, b, out=np.zeros_like(tmp), where=b != 0)
-    return rho
+    pass
 
 
 def compute_pairwise_diversity(
@@ -345,18 +296,4 @@ def compute_pairwise_diversity(
        classifiers
 
     """
-    n_classifiers = prediction_matrix.shape[1]
-    diversity = np.zeros(n_classifiers)
-
-    for clf_index in range(n_classifiers):
-        for clf_index2 in range(clf_index + 1, n_classifiers):
-            this_diversity = diversity_func(
-                targets,
-                prediction_matrix[:, clf_index],
-                prediction_matrix[:, clf_index2],
-            )
-
-            diversity[clf_index] += this_diversity
-            diversity[clf_index2] += this_diversity
-
-    return diversity
+    pass

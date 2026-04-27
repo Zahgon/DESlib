@@ -159,28 +159,7 @@ class KNORAE(BaseDES):
             Competence level estimated for each base classifier and test
             example.
         """
-        results_neighbors = self.DSEL_processed_[competence_region, :]
-
-        # Get the shape of the vector in order to know the number of samples,
-        # base classifiers and neighbors considered.
-        shape = results_neighbors.shape
-
-        # add an row with zero for the case where the base classifier correctly
-        # classifies the whole neighborhood. That way the search will always
-        # find a zero after comparing to self.K + 1 and will return self.K
-        # as the Competence level estimate (correctly classified the whole
-        # neighborhood)
-        addition = np.zeros((shape[0], shape[2]))
-        results_neighbors = np.insert(results_neighbors, shape[1], addition,
-                                      axis=1)
-
-        # Look for the first occurrence of a zero in the processed predictions
-        # (first misclassified sample). The np.argmax can be used here, since
-        # in case of multiple occurrences of the maximum values, the indices_
-        # corresponding to the first occurrence are returned.
-        competences = np.argmax(results_neighbors == 0, axis=1)
-
-        return competences.astype(float)
+        pass
 
     def select(self, competences):
         """Selects all base classifiers that obtained a local accuracy of 100%
@@ -213,16 +192,4 @@ class KNORAE(BaseDES):
             False otherwise.
 
         """
-        if competences.ndim < 2:
-            competences = competences.reshape(1, -1)
-
-        # Checks which was the max value for each sample
-        # (i.e., the maximum number of consecutive predictions)
-        max_value = np.max(competences, axis=1)
-
-        # Select all base classifiers with the maximum number of
-        #  consecutive correct predictions for each sample.
-        selected_classifiers = (
-                    competences == max_value.reshape(competences.shape[0], -1))
-
-        return selected_classifiers
+        pass

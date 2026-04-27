@@ -75,23 +75,7 @@ def _process_predictions(y, y_pred1, y_pred2):
 
     N11 : Percentage of samples that both classifiers predict the correct label
     """
-    size_y = len(y)
-    if size_y != len(y_pred1) or size_y != len(y_pred2):
-        raise ValueError(
-            'The vector with class labels must have the same size.')
-
-    N00, N10, N01, N11 = 0.0, 0.0, 0.0, 0.0
-    for index in range(size_y):
-        if y_pred1[index] == y[index] and y_pred2[index] == y[index]:
-            N11 += 1.0
-        elif y_pred1[index] == y[index] and y_pred2[index] != y[index]:
-            N10 += 1.0
-        elif y_pred1[index] != y[index] and y_pred2[index] == y[index]:
-            N01 += 1.0
-        else:
-            N00 += 1.0
-
-    return N00 / size_y, N10 / size_y, N01 / size_y, N11 / size_y
+    pass
 
 
 def double_fault(y, y_pred1, y_pred2):
@@ -121,9 +105,7 @@ def double_fault(y, y_pred1, y_pred2):
     ensembles for image classification purposes."
     Image and Vision Computing 19.9 (2001): 699-707.
     """
-    N00, _, _, _ = _process_predictions(y, y_pred1, y_pred2)
-    df = N00
-    return df
+    pass
 
 
 def negative_double_fault(y, y_pred1, y_pred2):
@@ -151,7 +133,7 @@ def negative_double_fault(y, y_pred1, y_pred2):
     ensembles for image classification purposes."
     Image and Vision Computing 19.9 (2001): 699-707.
     """
-    return -double_fault(y, y_pred1, y_pred2)
+    pass
 
 
 def Q_statistic(y, y_pred1, y_pred2):
@@ -175,9 +157,7 @@ def Q_statistic(y, y_pred1, y_pred2):
     -------
     Q : The q-statistic measure between two classifiers
     """
-    N00, N10, N01, N11 = _process_predictions(y, y_pred1, y_pred2)
-    Q = ((N11 * N00) - (N01 * N10)) / ((N11 * N00) + (N01 * N10))
-    return Q
+    pass
 
 
 def ratio_errors(y, y_pred1, y_pred2):
@@ -206,12 +186,7 @@ def ratio_errors(y, y_pred1, y_pred2):
     committee performance."
     Multiple Classifier Systems (2003): 159-159.
     """
-    N00, N10, N01, N11 = _process_predictions(y, y_pred1, y_pred2)
-    if N00 == 0:
-        ratio = sys.float_info.max
-    else:
-        ratio = (N01 + N10) / N00
-    return ratio
+    pass
 
 
 def disagreement_measure(y, y_pred1, y_pred2):
@@ -234,9 +209,7 @@ def disagreement_measure(y, y_pred1, y_pred2):
     -------
     disagreement : The frequency at which both classifiers disagrees
     """
-    _, N10, N01, _ = _process_predictions(y, y_pred1, y_pred2)
-    disagreement = N10 + N01
-    return disagreement
+    pass
 
 
 def agreement_measure(y, y_pred1, y_pred2):
@@ -259,9 +232,7 @@ def agreement_measure(y, y_pred1, y_pred2):
     -------
     agreement : The frequency at which both classifiers agrees
     """
-    N00, _, _, N11 = _process_predictions(y, y_pred1, y_pred2)
-    agreement = N00 + N11
-    return agreement
+    pass
 
 
 def correlation_coefficient(y, y_pred1, y_pred2):
@@ -283,10 +254,7 @@ def correlation_coefficient(y, y_pred1, y_pred2):
     -------
     rho : The correlation coefficient measured between two classifiers
     """
-    N00, N10, N01, N11 = _process_predictions(y, y_pred1, y_pred2)
-    tmp = (N11 * N00) - (N10 * N01)
-    rho = tmp / np.sqrt((N11 + N01) * (N10 + N00) * (N11 + N10) * (N01 + N00))
-    return rho
+    pass
 
 
 def compute_pairwise_diversity(targets, prediction_matrix, diversity_func):
@@ -310,16 +278,4 @@ def compute_pairwise_diversity(targets, prediction_matrix, diversity_func):
         classifiers
 
      """
-    n_classifiers = prediction_matrix.shape[1]
-    diversity = np.zeros(n_classifiers)
-
-    for clf_index in range(n_classifiers):
-        for clf_index2 in range(clf_index + 1, n_classifiers):
-            this_diversity = diversity_func(targets,
-                                            prediction_matrix[:, clf_index],
-                                            prediction_matrix[:, clf_index2])
-
-            diversity[clf_index] += this_diversity
-            diversity[clf_index2] += this_diversity
-
-    return diversity
+    pass

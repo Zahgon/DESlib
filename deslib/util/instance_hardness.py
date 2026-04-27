@@ -53,14 +53,7 @@ def hardness_region_competence(neighbors_idx, labels, safe_k):
     analysis of data complexity.
     Machine learning, 95(2), pp.225-256
     """
-    if neighbors_idx.ndim < 2:
-        neighbors_idx = np.atleast_2d(neighbors_idx)
-
-    neighbors_y = labels[neighbors_idx[:, :safe_k]]
-    _, num_majority_class = mode(neighbors_y, axis=1)
-    hardness = ((safe_k - num_majority_class) / safe_k).reshape(-1, )
-
-    return hardness
+    pass
 
 
 def kdn_score(X, y, k):
@@ -96,10 +89,4 @@ def kdn_score(X, y, k):
     Machine Learning 95 (2) (2014) 225-256.
 
     """
-
-    nbrs = NearestNeighbors(n_neighbors=k + 1, algorithm='kd_tree').fit(X)
-    _, indices = nbrs.kneighbors(X)
-    neighbors = indices[:, 1:]
-    diff_class = np.tile(y, (k, 1)).transpose() != y[neighbors]
-    score = np.sum(diff_class, axis=1) / k
-    return score, neighbors
+    pass

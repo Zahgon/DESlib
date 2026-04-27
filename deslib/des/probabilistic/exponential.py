@@ -136,12 +136,4 @@ class Exponential(BaseProbabilistic):
         C_src : array of shape (n_samples, n_classifiers)
             The competence source for each base classifier at each data point.
         """
-        C_src = np.zeros((self.n_samples_, self.n_classifiers_))
-        for clf_index in range(self.n_classifiers_):
-            supports = self.dsel_scores_[:, clf_index, :]
-            support_correct = supports[
-                np.arange(self.n_samples_), self.DSEL_target_]
-
-            C_src[:, clf_index] = exponential_func(self.n_classes_,
-                                                   support_correct)
-        return C_src
+        pass

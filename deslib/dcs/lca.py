@@ -174,23 +174,4 @@ class LCA(BaseDCS):
             Competence level estimated for each base classifier and test
             example.
         """
-        predictions = np.atleast_2d(predictions)
-
-        # Expanding the dimensions of the predictions and target arrays in
-        # order to compare both.
-        predictions_3d = np.expand_dims(predictions, axis=1)
-        target_3d = np.expand_dims(self.DSEL_target_[competence_region],
-                                   axis=2)
-        # Create a mask to remove the neighbors belonging to a different class
-        # than the predicted by the base classifier
-        mask = (predictions_3d != target_3d)
-        masked_preprocessed = np.ma.MaskedArray(
-            self.DSEL_processed_[competence_region, :], mask=mask)
-
-        competences_masked = np.mean(masked_preprocessed, axis=1)
-        # Fill 0 to the masked values in the resulting array (when no neighbors
-        # belongs to the class predicted by
-        # the corresponding base classifier)
-        competences = np.ma.filled(competences_masked, 0)
-
-        return competences
+        pass

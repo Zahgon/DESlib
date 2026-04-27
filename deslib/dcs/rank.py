@@ -164,19 +164,4 @@ class Rank(BaseDCS):
             Competence level estimated for each base classifier and test
             example.
         """
-        results_neighbors = self.DSEL_processed_[competence_region, :]
-
-        # Get the shape of the vector in order to know the number of samples,
-        # base classifiers and neighbors considered.
-        shape = results_neighbors.shape
-
-        # add an row with zero for the case where the base classifier correctly
-        # classifies the whole neighborhood.
-        # That way the search will always find a zero after comparing to
-        # self.K + 1
-        addition = np.zeros((shape[0], shape[2]))
-        results_neighbors = np.insert(results_neighbors, shape[1], addition,
-                                      axis=1)
-        competences = np.argmax(results_neighbors == 0, axis=1)
-
-        return competences.astype(np.float32)
+        pass

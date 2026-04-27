@@ -168,12 +168,7 @@ class DESKNN(BaseDS):
         -------
         self
         """
-        super(DESKNN, self).fit(X, y)
-        self.N_ = int(self.n_classifiers_ * self.pct_accuracy)
-        self.J_ = int(np.ceil(self.n_classifiers_ * self.pct_diversity))
-        self._check_parameters()
-        self._set_diversity_func()
-        return self
+        pass
 
     def estimate_competence(self, competence_region, distances=None,
                             predictions=None):
@@ -218,22 +213,7 @@ class DESKNN(BaseDS):
                     all test examples.
 
         """
-        accuracy = np.mean(self.DSEL_processed_[competence_region, :], axis=1)
-
-        predicted_matrix = self.BKS_DSEL_[competence_region, :]
-        targets = self.DSEL_target_[competence_region]
-
-        # TODO: optimize this part with numpy instead of for loops
-        diversity = np.zeros((competence_region.shape[0], self.n_classifiers_))
-        for sample_idx in range(competence_region.shape[0]):
-            this_diversity = compute_pairwise_diversity(targets[sample_idx, :],
-                                                        predicted_matrix[
-                                                        sample_idx, :, :],
-                                                        self.diversity_func_)
-
-            diversity[sample_idx, :] = this_diversity
-
-        return accuracy, diversity
+        pass
 
     def select(self, accuracy, diversity):
         """Select an ensemble containing the N most accurate ant the J most
@@ -253,33 +233,7 @@ class DESKNN(BaseDS):
             Array containing the indices of the J selected base classifier
             for each test example.
         """
-        # Check if the accuracy and diversity arrays have
-        # the correct dimensionality.
-        if accuracy.ndim < 2:
-            accuracy = accuracy.reshape(1, -1)
-
-        if diversity.ndim < 2:
-            diversity = diversity.reshape(1, -1)
-
-        # sort the array to remove the most accurate classifiers
-        competent_indices = np.argsort(accuracy, axis=1)[:, ::-1][:, 0:self.N_]
-        diversity_of_selected = diversity[
-            np.arange(diversity.shape[0])[:, None], competent_indices]
-        # diversity_of_selected = diversity.take(competent_indices)
-
-        # sort the remaining classifiers to select the most diverse ones
-        if self.more_diverse:
-            diversity_indices = np.argsort(diversity_of_selected, axis=1)
-            diversity_indices = diversity_indices[:, ::-1][:, 0:self.J_]
-        else:
-            diversity_indices = np.argsort(diversity_of_selected, axis=1)
-            diversity_indices = diversity_indices[:, 0:self.J_]
-
-        # Getting the index of all selected base classifiers.
-        selected_classifiers = competent_indices[
-            np.arange(competent_indices.shape[0])[:, None], diversity_indices]
-
-        return selected_classifiers
+        pass
 
     def classify_with_ds(self, predictions, probabilities=None,
                          neighbors=None, distances=None, DFP_mask=None):
@@ -317,10 +271,7 @@ class DESKNN(BaseDS):
         predicted_label : array of shape (n_samples)
                           Predicted class label for each test example.
         """
-        proba = self.predict_proba_with_ds(predictions, probabilities,
-                                           neighbors, distances, DFP_mask)
-        predicted_label = proba.argmax(axis=1)
-        return predicted_label
+        pass
 
     def predict_proba_with_ds(self, predictions, probabilities,
                               neighbors=None, distances=None, DFP_mask=None):
@@ -357,28 +308,7 @@ class DESKNN(BaseDS):
         predicted_proba : array = [n_samples, n_classes]
                           Probability estimates for all test examples.
         """
-        accuracy, diversity = self.estimate_competence(neighbors,
-                                                       distances=distances,
-                                                       predictions=predictions)
-        if self.DFP:
-            accuracy = accuracy * DFP_mask
-
-        # This method always performs selection. There is no weighted version.
-        selected_classifiers = self.select(accuracy, diversity)
-
-        if self.voting == 'hard':
-            votes = predictions[np.arange(predictions.shape[0])[:, None],
-                                selected_classifiers]
-            votes = sum_votes_per_class(votes, self.n_classes_)
-            predicted_proba = votes / votes.sum(axis=1)[:, None]
-        else:
-            ensemble_proba = probabilities[
-                             np.arange(probabilities.shape[0])[:, None],
-                             selected_classifiers, :]
-
-            predicted_proba = np.mean(ensemble_proba, axis=1)
-
-        return predicted_proba
+        pass
 
     def _check_parameters(self):
         """Check if the parameters passed as argument are correct.
@@ -388,25 +318,7 @@ class DESKNN(BaseDS):
         ValueError
             If the hyper-parameters are incorrect.
         """
-        if self.metric not in ['DF', 'Q', 'ratio']:
-            raise ValueError(
-                'Diversity metric must be one of the following values:'
-                ' "DF", "Q" or "Ratio"')
-
-        if self.N_ <= 0 or self.J_ <= 0:
-            raise ValueError("The values of N_ and J_ should be higher than 0"
-                             "N_ = {}, J_= {} ".format(self.N_, self.J_))
-        if self.N_ < self.J_:
-            raise ValueError(
-                "The value of N_ should be greater or equals than J_"
-                "N_ = {}, J_= {} ".format(self.N_, self.J_))
-
-        if self.voting not in ['soft', 'hard']:
-            raise ValueError('Invalid value for parameter "mode".'
-                             ' "mode" should be one of these options '
-                             '{selection, hybrid, weighting}')
-        if self.voting == 'soft':
-            self._check_predict_proba()
+        pass
 
     def _set_diversity_func(self):
         """Set the diversity function to be used according to the
@@ -416,9 +328,4 @@ class DESKNN(BaseDS):
         or Ratio of errors.
         ----------
         """
-        if self.metric == 'DF':
-            self.diversity_func_ = negative_double_fault
-        elif self.metric == 'Q':
-            self.diversity_func_ = Q_statistic
-        else:
-            self.diversity_func_ = ratio_errors
+        pass

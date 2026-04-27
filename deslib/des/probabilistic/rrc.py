@@ -132,11 +132,4 @@ class RRC(BaseProbabilistic):
         C_src : array of shape (n_samples, n_classifiers)
             The competence source for each base classifier at each data point.
         """
-        c_src = np.zeros((self.n_samples_, self.n_classifiers_))
-
-        for clf_index in range(self.n_classifiers_):
-            # Get supports for all samples in DSEL
-            supports = self.dsel_scores_[:, clf_index, :]
-            c_src[:, clf_index] = ccprmod(supports, self.DSEL_target_)
-
-        return c_src
+        pass

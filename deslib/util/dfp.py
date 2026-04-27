@@ -49,14 +49,7 @@ def frienemy_pruning(X_query, X_dsel, y_dsel, ensemble, k):
                otherwise.
 
     """
-    predictions = np.zeros((X_dsel.shape[0], len(ensemble)),
-                           dtype=np.intp)
-    for index, clf in enumerate(ensemble):
-        predictions[:, index] = clf.predict(X_dsel)
-    hit_miss = predictions == y_dsel[:, np.newaxis]
-    competence_region = KNeighborsClassifier(n_neighbors=k).fit(X_dsel, y_dsel)
-    neighbors = competence_region.kneighbors(X_query, return_distance=False)
-    return frienemy_pruning_preprocessed(neighbors, y_dsel, hit_miss)
+    pass
 
 
 def frienemy_pruning_preprocessed(neighbors, y_val, hit_miss):
@@ -87,27 +80,4 @@ def frienemy_pruning_preprocessed(neighbors, y_val, hit_miss):
                Mask containing 1 for the selected base classifier and 0
                otherwise.
     """
-    if neighbors.ndim < 2:
-        neighbors = neighbors.reshape(1, -1)
-
-    n_samples = neighbors.shape[0]
-    n_classifiers = hit_miss.shape[1]
-    dfp_mask = np.zeros((n_samples, n_classifiers))
-
-    # TODO: vectorize this code?
-    for sample_idx in range(n_samples):
-        curr_neighbors = neighbors[sample_idx]
-        neighbors_y = y_val[curr_neighbors]
-        if len(set(neighbors_y)) > 1:
-            # Indecision region. Check if the base classifier predict the
-            # correct label for a sample belonging to each class.
-            for clf_index in range(n_classifiers):
-                [mask] = np.where(hit_miss[curr_neighbors, clf_index])
-                if len(set(neighbors_y[mask])) > 1:
-                    dfp_mask[sample_idx, clf_index] = 1.0
-        else:
-            # Safe region.
-            dfp_mask[sample_idx, :] = 1.0
-    # rows that all classifiers were pruned are set to 1.0
-    dfp_mask[np.all(dfp_mask == 0, axis=1)] = 1.0
-    return dfp_mask
+    pass

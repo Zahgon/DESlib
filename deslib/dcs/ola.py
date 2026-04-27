@@ -166,7 +166,4 @@ class OLA(BaseDCS):
             Competence level estimated for each base classifier and test
             example.
         """
-        competences = np.mean(self.DSEL_processed_[competence_region, :],
-                              axis=1)
-
-        return competences
+        pass

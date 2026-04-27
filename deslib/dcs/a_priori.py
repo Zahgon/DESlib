@@ -154,11 +154,7 @@ class APriori(BaseDCS):
         -------
         self
         """
-        super(APriori, self).fit(X, y)
-        self._check_predict_proba()
-
-        self.dsel_scores_ = self._predict_proba_base(self.DSEL_data_)
-        return self
+        pass
 
     def estimate_competence(self, competence_region, distances,
                             predictions=None):
@@ -197,21 +193,4 @@ class APriori(BaseDCS):
             Competence level estimated for each base classifier and test
             example.
         """
-        distances[distances == 0] = 1e-10
-        dists_normalized = 1.0 / distances
-
-        # Get the ndarray containing the scores obtained for the correct class
-        # for each neighbor (and test sample)
-        scores_target_class = self.dsel_scores_[
-            competence_region, :, self.DSEL_target_[competence_region]]
-
-        # Multiply the scores obtained for the correct class to the distances
-        # of each corresponding neighbor
-        scores_target_class *= np.expand_dims(dists_normalized, axis=2)
-
-        # Sum the scores obtained for each neighbor and divide by the sum of
-        # all distances
-        competences = np.sum(scores_target_class, axis=1) / np.sum(
-            dists_normalized, axis=1, keepdims=True)
-
-        return competences
+        pass

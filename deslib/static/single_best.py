@@ -74,36 +74,10 @@ class SingleBest(BaseStaticEnsemble):
             class labels of each example in X.
 
         """
-        X, y = validate_data(
-            self,
-            X,
-            y,
-            accept_sparse="csr",
-            dtype=np.float64,
-            order="C",
-            accept_large_sparse=False,
-        )
-
-        super(SingleBest, self).fit(X, y)
-
-        if not self.base_already_encoded_:
-            y_encoded = y
-        else:
-            y_encoded = self.enc_.transform(y)
-
-        performances = self._estimate_performances(X, y_encoded)
-        self.best_clf_index_ = np.argmax(performances)
-        self.best_clf_ = self.pool_classifiers_[self.best_clf_index_]
-
-        return self
+        pass
 
     def _estimate_performances(self, X, y):
-        performances = np.zeros(self.n_classifiers_)
-        for idx, clf in enumerate(self.pool_classifiers_):
-            scorer = check_scoring(clf, self.scoring)
-            performances[idx] = scorer(clf,
-                                       X[:, self.estimator_features_[idx]], y)
-        return performances
+        pass
 
     def predict(self, X):
         """Predict the label of each sample in X and returns the predicted
@@ -119,19 +93,7 @@ class SingleBest(BaseStaticEnsemble):
         predicted_labels : array of shape (n_samples)
                            Predicted class for each sample in X.
         """
-        self._check_is_fitted()
-        X = check_array(X)
-        if self.n_features_ != X.shape[1]:
-            raise ValueError("Number of features of the model must "
-                             "match the input. Model n_features is {0} and "
-                             "input n_features is {1}."
-                             "".format(self.n_features_, X.shape[1]))
-
-        predictions = self.best_clf_.predict(
-            X[:, self.estimator_features_[self.best_clf_index_]])
-
-        predictions = self._encode_base_labels(predictions)
-        return self.classes_.take(predictions.astype(int))
+        pass
 
     def predict_proba(self, X):
         """Estimates the posterior probabilities for each class for each sample
@@ -149,23 +111,10 @@ class SingleBest(BaseStaticEnsemble):
             Posterior probabilities estimates for each class.
 
         """
-        self._check_is_fitted()
-        if "predict_proba" not in dir(self.best_clf_):
-            raise ValueError(
-                "Base classifier must support the predict_proba function.")
-        X = check_array(X)
-        if self.n_features_ != X.shape[1]:
-            raise ValueError("Number of features of the model must "
-                             "match the input. Model n_features is {0} and "
-                             "input n_features is {1}."
-                             "".format(self.n_features_, X.shape[1]))
-
-        predicted_proba = self.best_clf_.predict_proba(
-            X[:, self.estimator_features_[self.best_clf_index_]])
-        return predicted_proba
+        pass
 
     def _check_is_fitted(self):
         """Verify if the estimator algorithm was fitted. Raises an error if it
         is not fitted.
         """
-        check_is_fitted(self, "best_clf_")
+        pass

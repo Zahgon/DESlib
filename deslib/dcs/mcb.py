@@ -196,40 +196,8 @@ class MCB(BaseDCS):
             Competence level estimated for each base classifier and test
             example.
         """
-
-        # Use the pre-compute decisions to transform the query to the BKS space
-        BKS_query = predictions
-
-        T = (self.BKS_DSEL_[competence_region] == BKS_query.reshape(
-            BKS_query.shape[0], -1, BKS_query.shape[1]))
-        S = np.sum(T, axis=2) / self.n_classifiers_
-
-        # get a mask with the neighbors that will be considered for the
-        # competence estimation for all samples.
-        boolean_mask = (S > self.similarity_threshold)
-        boolean_mask[~np.any(boolean_mask, axis=1), :] = True
-        # Expanding this mask to the third axis (n_classifiers) since it is
-        # the same for each classifier.
-        boolean_mask = np.repeat(np.expand_dims(boolean_mask, axis=2),
-                                 self.n_classifiers_, axis=2)
-
-        # Use the masked array mean to take into account the removed neighbors
-        processed_pred = np.ma.MaskedArray(
-            self.DSEL_processed_[competence_region, :], mask=~boolean_mask)
-
-        competences = np.ma.mean(processed_pred, axis=1)
-        return competences
+        pass
 
     def _validate_parameters(self):
 
-        super(MCB, self)._validate_parameters()
-
-        if not isinstance(self.similarity_threshold, float):
-            raise TypeError(
-                'The parameter similarity_threshold must be a float.'
-                ' similarity_threshold = ', type(self.similarity_threshold))
-        if self.similarity_threshold > 1 or self.similarity_threshold < 0:
-            raise ValueError(
-                'The parameter similarity_threshold should be between'
-                ' [0 and 1]. similarity_threshold = ',
-                self.similarity_threshold)
+        pass

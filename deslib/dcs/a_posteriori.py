@@ -160,11 +160,7 @@ class APosteriori(BaseDCS):
         -------
         self
         """
-        super(APosteriori, self).fit(X, y)
-        self._check_predict_proba()
-
-        self.dsel_scores_ = self._predict_proba_base(self.DSEL_data_)
-        return self
+        pass
 
     def estimate_competence(self, competence_region, distances,
                             predictions=None):
@@ -205,46 +201,4 @@ class APosteriori(BaseDCS):
             Competence level estimated for each base classifier and test
             example.
         """
-        # Guarantee that these arrays are view as a 2D array for the case where
-        # a single test sample is passed down.
-        predictions = np.atleast_2d(predictions)
-        distances[distances == 0] = 1e-10
-
-        # Normalize the distances
-        dists_normalized = 1.0 / distances
-
-        # Expanding the dimensions of the predictions and target arrays in
-        # order to compare both.
-        predictions_3d = np.expand_dims(predictions, axis=1)
-        target_3d = self.DSEL_target_[competence_region, np.newaxis]
-
-        # Create a mask to remove the neighbors belonging to a different class
-        # than the predicted by the base classifier
-        mask = (predictions_3d != target_3d)
-
-        # Broadcast the distance array to the same shape as the pre-processed
-        # information for future calculations
-        dists_normalized = np.repeat(np.expand_dims(dists_normalized, axis=2),
-                                     self.n_classifiers_, axis=2)
-
-        # Multiply the pre-processed correct predictions by the base
-        # classifiers to the distance array
-        scores_target = self.dsel_scores_[competence_region, :,
-                                          self.DSEL_target_[competence_region]]
-        scores_target_norm = scores_target * dists_normalized
-
-        # Create masked arrays to remove samples with different label in the
-        # calculations
-        masked_preprocessed = np.ma.MaskedArray(scores_target_norm, mask=mask)
-        masked_dist = np.ma.MaskedArray(dists_normalized, mask=mask)
-
-        # Consider only the neighbor samples where the predicted label is
-        # equals to the neighbor label
-        competences_masked = np.ma.sum(masked_preprocessed,
-                                       axis=1) / np.ma.sum(masked_dist, axis=1)
-
-        # Fill 0 to the masked values in the resulting array (when no neighbors
-        # belongs to the class predicted by the corresponding base classifier)
-        competences = np.ma.filled(competences_masked, 0)
-
-        return competences
+        pass

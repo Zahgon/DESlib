@@ -148,20 +148,7 @@ class KNOP(BaseDES):
         -------
         self
         """
-        super(KNOP, self).fit(X, y)
-        if self.n_classes_ == 1:
-            raise ValueError(
-                "Error. KNOP  does not accept one class datasets!")
-        self._check_predict_proba()
-        self.dsel_scores_ = self._predict_proba_base(self.DSEL_data_)
-        # Reshape DSEL_scores as a 2-D array for nearest neighbor calculations
-        dsel_output_profiles = self.dsel_scores_.reshape(self.n_samples_,
-                                                         self.n_classifiers_ *
-                                                         self.n_classes_)
-
-        self._fit_OP(dsel_output_profiles, self.DSEL_target_, self.k_)
-
-        return self
+        pass
 
     def _fit_OP(self, X_op, y_op, k):
         """ Fit the set of output profiles.
@@ -180,14 +167,7 @@ class KNOP(BaseDES):
             estimation.
 
         """
-        self.op_knn_ = self.knn_class_(k)
-
-        if self.n_classes_ == 2:
-            # Get only the scores for one class since they are complementary
-            X_temp = X_op[:, ::2]
-            self.op_knn_.fit(X_temp, y_op)
-        else:
-            self.op_knn_.fit(X_op, y_op)
+        pass
 
     def _get_similar_out_profiles(self, probabilities):
         """Get the most similar output profiles of the query sample.
@@ -207,18 +187,7 @@ class KNOP(BaseDES):
             Indices of the instances belonging to the region of competence of
             the given query sample.
         """
-
-        if self.n_classes_ == 2:
-            # Get only the scores for one class since they are complementary
-            query_op = probabilities[:, :, 0]
-        else:
-            query_op = probabilities.reshape((probabilities.shape[0],
-                                              self.n_classifiers_ *
-                                              self.n_classes_))
-
-        dists, idx = self.op_knn_.kneighbors(query_op, n_neighbors=self.k_,
-                                             return_distance=True)
-        return dists, np.atleast_2d(idx)
+        pass
 
     def estimate_competence_from_proba(self, probabilities,
                                        neighbors=None, distances=None):
@@ -249,11 +218,7 @@ class KNOP(BaseDES):
             Competence level estimated for each base classifier and test
             example.
         """
-        _, idx_neighbors = self._get_similar_out_profiles(probabilities)
-        competences = np.sum(self.DSEL_processed_[idx_neighbors, :], axis=1,
-                             dtype=float)
-
-        return competences
+        pass
 
     def select(self, competences):
         """Select the base classifiers for the classification of the query
@@ -275,14 +240,4 @@ class KNOP(BaseDES):
             Boolean matrix containing True if the base classifier is selected,
             False otherwise.
         """
-        if competences.ndim < 2:
-            competences = competences.reshape(1, -1)
-
-        # Select classifier if it correctly classified at least one sample
-        selected_classifiers = (competences > 0)
-
-        # For the rows that are all False (i.e., no base classifier
-        # was selected, select all classifiers (set all True)
-        selected_classifiers[~np.any(selected_classifiers, axis=1), :] = True
-
-        return selected_classifiers
+        pass

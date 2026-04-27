@@ -159,10 +159,7 @@ class DESP(BaseDES):
             Competence level estimated for each base classifier and test
             example.
         """
-        competences = np.mean(self.DSEL_processed_[competence_region, :],
-                              axis=1)
-
-        return competences
+        pass
 
     def select(self, competences):
         """Selects all base classifiers that obtained a local classification
@@ -183,13 +180,4 @@ class DESP(BaseDES):
             False otherwise.
 
         """
-        if competences.ndim < 2:
-            competences = competences.reshape(1, -1)
-
-        RC = 1.0 / self.n_classes_
-        selected_classifiers = (competences > RC)
-
-        # For the rows that are all False (i.e., no base classifier
-        # was selected, select all classifiers (set all True)
-        selected_classifiers[~np.any(selected_classifiers, axis=1), :] = True
-        return selected_classifiers
+        pass

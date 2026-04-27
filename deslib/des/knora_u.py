@@ -153,10 +153,7 @@ class KNORAU(BaseDES):
             example.
 
         """
-        competences = np.sum(self.DSEL_processed_[competence_region, :],
-                             axis=1, dtype=float)
-
-        return competences
+        pass
 
     def select(self, competences):
         """Select the base classifiers for the classification of the query
@@ -178,14 +175,4 @@ class KNORAU(BaseDES):
             Boolean matrix containing True if the base classifier is selected,
             False otherwise.
         """
-        if competences.ndim < 2:
-            competences = competences.reshape(1, -1)
-
-        # Select classifier if it correctly classified at least one sample
-        selected_classifiers = (competences > 0)
-
-        # For the rows that are all False (i.e., no base classifier was
-        # selected, select all classifiers (set all True)
-        selected_classifiers[~np.any(selected_classifiers, axis=1), :] = True
-
-        return selected_classifiers
+        pass
